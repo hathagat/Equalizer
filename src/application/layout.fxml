@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
+   <center>
+      <HBox fx:id="hBoxCenter" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <Slider fx:id="slider1" blockIncrement="5.0" layoutX="10.0" layoutY="10.0" majorTickUnit="50.0" max="50.0" min="-50.0" minorTickCount="15" orientation="VERTICAL" showTickMarks="true" snapToTicks="true">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Slider>
+            <Slider fx:id="slider2" blockIncrement="5.0" layoutX="126.0" layoutY="10.0" majorTickUnit="50.0" max="50.0" min="-50.0" minorTickCount="15" orientation="VERTICAL" showTickMarks="true" snapToTicks="true">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Slider>
+            <Slider fx:id="slider3" blockIncrement="5.0" layoutX="20.0" layoutY="20.0" majorTickUnit="50.0" max="50.0" min="-50.0" minorTickCount="15" orientation="VERTICAL" showTickMarks="true" snapToTicks="true">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Slider>
+            <Slider fx:id="slider4" layoutX="20.0" layoutY="20.0" majorTickUnit="50.0" max="50.0" min="-50.0" minorTickCount="15" orientation="VERTICAL" showTickMarks="true" snapToTicks="true">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Slider>
+            <Slider fx:id="slider5" layoutX="54.0" layoutY="10.0" majorTickUnit="50.0" max="50.0" min="-50.0" minorTickCount="15" orientation="VERTICAL" showTickMarks="true" snapToTicks="true">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Slider>
+            <Slider fx:id="slider6" layoutX="78.0" layoutY="10.0" majorTickUnit="50.0" max="50.0" min="-50.0" minorTickCount="15" orientation="VERTICAL" showTickMarks="true" snapToTicks="true">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Slider>
+            <Slider fx:id="slider7" layoutX="126.0" layoutY="10.0" majorTickUnit="50.0" max="50.0" min="-50.0" minorTickCount="15" orientation="VERTICAL" showTickMarks="true" snapToTicks="true">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Slider>
+            <Slider fx:id="slider8" layoutX="102.0" layoutY="10.0" majorTickUnit="50.0" max="50.0" min="-50.0" minorTickCount="15" orientation="VERTICAL" showTickMarks="true" snapToTicks="true">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Slider>
+            <Slider fx:id="slider9" layoutX="150.0" layoutY="10.0" majorTickUnit="50.0" max="50.0" min="-50.0" minorTickCount="15" orientation="VERTICAL" showTickMarks="true" snapToTicks="true">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Slider>
+            <Slider fx:id="slider10" layoutX="174.0" layoutY="10.0" majorTickUnit="50.0" max="50.0" min="-50.0" minorTickCount="15" orientation="VERTICAL" showTickMarks="true" snapToTicks="true">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Slider>
+         </children>
+         <BorderPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </BorderPane.margin>
+      </HBox>
+   </center>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+   <top>
+      <HBox fx:id="hBoxTop" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <TextField fx:id="textFieldOpen" promptText="Dateipfad eingeben">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </TextField>
+            <Button fx:id="buttonOpen" mnemonicParsing="false" onAction="#handleButtonOpen" text="...">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+   </top>
+   <bottom>
+      <HBox fx:id="hBoxBottom" alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="labelName" text="Dateiname">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Label>
+            <Label fx:id="labelTime" layoutX="480.0" layoutY="52.0" text="abgelaufene Zeit / Gesamtzeit">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Label>
+            <Button fx:id="buttonPlay" mnemonicParsing="false" onAction="#handleButtonPlay" text="Abspielen">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="buttonStop" layoutX="511.0" layoutY="48.0" mnemonicParsing="false" onAction="#handleButtonStop" text="Stop">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+   </bottom>
+</BorderPane>
