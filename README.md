@@ -1,0 +1,2 @@
+# Equalizer
+JavaFX Equalizer Application
