@@ -62,14 +62,17 @@ public class LayoutController {
             // falls Datei korrekt
         	if(file.exists() && isWav) {
     			buttonPlay.setText("Stop");
-        		// spiele die Datei in neuem Thread ab
-        		Runnable run = () -> {
-
-        			soundProcessor.playSound(file);
-        			buttonPlay.setText("Abspielen");
-        		};
-        		Thread thread = new Thread(run);
-        		thread.start();
+        		// spiele die Datei in neuem Service ab
+    			musicService = new EqualizerService(file);
+    			musicService.setSoundProcessor(soundProcessor);
+    			musicService.setOnSucceeded(e -> {
+    				System.out.println("Done: ");
+    				buttonPlay.setText("Abspielen");
+    			});
+    			musicService.setOnCancelled(e -> {
+    				buttonPlay.setText("Abspielen");
+    			});
+    			musicService.start();
 
                 labelName.setText("Datei:\n" + file.getName());
                 // TODO evtl aktuelle Zeit anzeigen
@@ -90,7 +93,7 @@ public class LayoutController {
     	}
     	else {
     		// bei Klick auf Stop
-    		soundProcessor.stopSound();
+    		musicService.cancel();
     	}
 
     }
