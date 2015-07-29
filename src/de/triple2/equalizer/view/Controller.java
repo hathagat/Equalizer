@@ -2,6 +2,7 @@ package de.triple2.equalizer.view;
 
 import java.io.File;
 
+import de.triple2.equalizer.controller.EqualizerService;
 import de.triple2.equalizer.controller.SoundProcessor;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -14,7 +15,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 
 /**
- * Interface Logik
+ * Interface Logik.
  */
 public class Controller {
 
@@ -29,6 +30,9 @@ public class Controller {
     private File file;
     private final FileChooser fileChooser = new FileChooser();
 	private SoundProcessor soundProcessor = new SoundProcessor();
+	
+	/** Der Service zum Abspielen der Musik in einem Hintergrund Thread. */
+	private EqualizerService musicService;
 
     /**
      * Wird bei Klick auf den Open Button aufgerufen.
@@ -53,15 +57,18 @@ public class Controller {
             file = new File(textFieldOpen.getText());
 
         	if(file.exists()) {
-    			buttonPlay.setText("Stop");
-        		// spiele die Datei in neuem Thread ab
-        		Runnable run = () -> {
-
-        			soundProcessor.playSound(file);
-        			buttonPlay.setText("Abspielen");
-        		};
-        		Thread thread = new Thread(run);
-        		thread.start();
+        		buttonPlay.setText("Stop");
+    			musicService = new EqualizerService(file);
+    			musicService.setSoundProcessor(soundProcessor);
+    			musicService.setOnSucceeded(e -> {
+    				System.out.println("Done: ");
+    				buttonPlay.setText("Abspielen");
+    			});
+    			musicService.setOnCancelled(e -> {
+    				buttonPlay.setText("Abspielen");
+    			});
+    			musicService.start();
+    	
         	}
         	else {
         		// Fehlermeldungen
@@ -78,7 +85,7 @@ public class Controller {
     	}
     	else {
     		// bei Klick auf Stop
-    		soundProcessor.stopSound();
+    		musicService.cancel();
     	}
 
     }
