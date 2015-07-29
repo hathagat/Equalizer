@@ -1,20 +1,27 @@
 package de.triple2.equalizer.controller;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class SoundProcessor {
-	
+
 	// abzuspielende Audio Line
 	private SourceDataLine soundLine = null;
 
+	/**
+	 * Liest eine Audio Datei ein, übergibt sie dem Equalizer
+	 * und spielt sie ab.
+	 * @param soundFile Die Audiodatei.
+	 */
 	public void playSound(File soundFile) {
-		
+
 		try {
 			// Input Stream
 			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
@@ -65,16 +72,55 @@ public class SoundProcessor {
 						soundLine.write(audioBytes, 0, numBytesRead);
 					}
 				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
-	
+
+	/**
+	 * Beendet das Abspielen der Datei.
+	 */
 	public void stopSound() {
 		soundLine.stop();
 	}
-	
+
+	/**
+	 * Liefert die Länge einer Audio Datei in Sekunden.
+	 * @param soundFile Die Audiodatei.
+	 * @return Die Länge in Sekunden.
+	 */
+	public int getLength(File soundFile) {
+		float durationInSeconds = 0;
+		try {
+			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
+		    AudioFormat format = audioInputStream.getFormat();
+		    long audioFileLength = soundFile.length();
+		    int frameSize = format.getFrameSize();
+		    float frameRate = format.getFrameRate();
+		    durationInSeconds = (audioFileLength / (frameSize * frameRate));
+		} catch (UnsupportedAudioFileException | IOException e) {
+			e.printStackTrace();
+		}
+		// runde auf zwei Nachkommastellen
+		return Math.round(durationInSeconds);
+	}
+
+	/**
+	 * Liefert die Dateiendung einer Datei.
+	 * @param file Die zu überprüfende Datei.
+	 * @return Die Dateiendung.
+	 */
+    public String getFileExtension(File file) {
+        String fileName = file.getName();
+
+        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0) {
+            return fileName.substring(fileName.lastIndexOf(".") + 1);
+        }
+        else {
+        	return "";
+        }
+    }
 }

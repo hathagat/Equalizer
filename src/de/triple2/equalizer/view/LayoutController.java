@@ -16,7 +16,7 @@ import javafx.stage.FileChooser;
 /**
  * Interface Logik
  */
-public class Controller {
+public class LayoutController {
 
     public BorderPane borderPane;
     public HBox hBoxTop, hBoxCenter, hBoxBottom;
@@ -24,7 +24,7 @@ public class Controller {
     public Button buttonOpen;
 	public Button buttonPlay;
     public Slider slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8, slider9, slider10;
-    public Label labelName, labelTime;
+    public Label labelPath, labelName, labelTime;
 
     private File file;
     private final FileChooser fileChooser = new FileChooser();
@@ -52,7 +52,15 @@ public class Controller {
         	// hole den Pfad aus dem Textfeld
             file = new File(textFieldOpen.getText());
 
-        	if(file.exists()) {
+            // Dateiendung überprüfen
+            boolean isWav = false;
+            if(soundProcessor.getFileExtension(file).equals("wav") ||
+            		soundProcessor.getFileExtension(file).equals("WAV")) {
+            	isWav = true;
+            }
+
+            // falls Datei korrekt
+        	if(file.exists() && isWav) {
     			buttonPlay.setText("Stop");
         		// spiele die Datei in neuem Thread ab
         		Runnable run = () -> {
@@ -62,19 +70,23 @@ public class Controller {
         		};
         		Thread thread = new Thread(run);
         		thread.start();
+
+                labelName.setText("Datei:\n" + file.getName());
+                // TODO evtl aktuelle Zeit anzeigen
+                labelTime.setText("Länge:\n" + soundProcessor.getLength(file) + " Sekunden");
         	}
         	else {
         		// Fehlermeldungen
         		if(textFieldOpen.getText().equals("")) {
         			showError("Abspielen nicht möglich!", "Keine Datei angegeben.", "");
         		}
+        		else if(file.exists() && !isWav) {
+        			showError("Abspielen nicht möglich!", "Datei ist kein Wavesound:", file.getAbsolutePath());
+        		}
         		else {
             		showError("Abspielen nicht möglich!", "Datei konnte nicht gefunden werden:", file.getAbsolutePath());
         		}
         	}
-
-            // TODO labelName.setText(fileName);
-            // labelTime.setText(time);
     	}
     	else {
     		// bei Klick auf Stop
@@ -85,7 +97,6 @@ public class Controller {
 
     /**
      * Konfiguriert den Öffnen Dialog.
-     *
      * @param chooser Der Öffnen Dialog.
      * @param title Der Titel des Dialog Fenster.
      */

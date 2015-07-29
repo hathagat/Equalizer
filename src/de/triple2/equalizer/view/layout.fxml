@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.media.*?>
 <?import javafx.geometry.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.triple2.equalizer.view.Controller">
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.triple2.equalizer.view.LayoutController">
    <center>
       <HBox fx:id="hBoxCenter" alignment="CENTER" prefHeight="100.0" BorderPane.alignment="CENTER">
          <children>
@@ -71,7 +72,12 @@
    <top>
       <HBox fx:id="hBoxTop" alignment="CENTER_LEFT" prefHeight="100.0" BorderPane.alignment="CENTER">
          <children>
-            <TextField fx:id="textFieldOpen" prefWidth="300.0" promptText="Dateipfad eingeben">
+            <Label fx:id="labelPath" text="Dateipfad:">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Label>
+            <TextField fx:id="textFieldOpen" prefWidth="300.0" promptText="C:\Programme\triple2\Equalizer\music.wav">
                <HBox.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </HBox.margin>
@@ -87,19 +93,19 @@
    <bottom>
       <HBox fx:id="hBoxBottom" alignment="CENTER_RIGHT" prefHeight="100.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="labelName" text="Dateiname">
+            <Label fx:id="labelName">
                <HBox.margin>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                </HBox.margin>
             </Label>
-            <Label fx:id="labelTime" layoutX="480.0" layoutY="52.0" text="abgelaufene Zeit / Gesamtzeit">
+            <Label fx:id="labelTime" layoutX="480.0" layoutY="52.0">
                <HBox.margin>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                </HBox.margin>
             </Label>
             <Button fx:id="buttonPlay" mnemonicParsing="false" onAction="#handleButtonPlay" text="Abspielen">
                <HBox.margin>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                </HBox.margin>
             </Button>
          </children>
