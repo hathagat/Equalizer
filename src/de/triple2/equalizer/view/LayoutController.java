@@ -2,6 +2,7 @@ package de.triple2.equalizer.view;
 
 import java.io.File;
 
+import de.triple2.equalizer.controller.EqualizerService;
 import de.triple2.equalizer.controller.SoundProcessor;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -29,6 +30,7 @@ public class LayoutController {
     private File file;
     private final FileChooser fileChooser = new FileChooser();
 	private SoundProcessor soundProcessor = new SoundProcessor();
+	private EqualizerService musicService;
 
     /**
      * Wird bei Klick auf den Open Button aufgerufen.
