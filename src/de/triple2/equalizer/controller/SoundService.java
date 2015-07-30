@@ -5,14 +5,14 @@ import java.io.File;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
-/** Diese Klasse stellt einen Service bereit, um die ausgewählt Musik im Hintergrund abspielen zu können, ohne das dabei
+/** Diese Klasse stellt einen Service bereit, um die ausgewählte Musik im Hintergrund abspielen zu können, ohne das dabei
  * das graphische Interface blockiert wird. */
-public class EqualizerService extends Service<SoundProcessor> {
+public class SoundService extends Service<SoundProcessor> {
 	private File music = null;
 	private SoundProcessor soundProcessor;
 
 	// Konstruktor, dem die abzuspielende Datei übergeben werden muss.
-	public EqualizerService(File file){
+	public SoundService(File file) {
 		music = file;
 	}
 
@@ -26,7 +26,6 @@ public class EqualizerService extends Service<SoundProcessor> {
 		return soundProcessor;
 	}
 
-
 	@Override
 	protected Task createTask() {
 		final SoundProcessor soundProcessor = getSoundProcessor();
@@ -36,9 +35,7 @@ public class EqualizerService extends Service<SoundProcessor> {
 				soundProcessor.playSound(music);
 				return soundProcessor;
 			}
-
 		};
-
 	}
 
 	@Override
@@ -46,5 +43,4 @@ public class EqualizerService extends Service<SoundProcessor> {
 		soundProcessor.stopSound();
 		return super.cancel();
 	}
-
 }
