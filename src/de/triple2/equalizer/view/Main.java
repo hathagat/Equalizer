@@ -21,11 +21,13 @@ public class Main extends Application {
 		Parent root = FXMLLoader.load(getClass().getResource("layout.fxml"));
 
 		// Fensterinhalt
-		Scene scene = new Scene(root, 800, 600);
+		Scene scene = new Scene(root, 800, 500);
 		
 		// Fenster
 		window.setScene(scene);
 		window.setTitle("triple2 Equalizer");
+		window.setMinWidth(576);
+		window.setMinHeight(320);
 		window.show();
 	}
 	
