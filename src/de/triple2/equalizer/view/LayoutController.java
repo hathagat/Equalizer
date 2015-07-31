@@ -66,7 +66,7 @@ public class LayoutController {
 		// schließe die aktuelle Stage und damit das Programm
 		Main.getStage().close();
 	}
-	
+
 	/**
 	 * Wird bei Auswahl der Verstärkung aufgerufen.
 	 */
@@ -88,11 +88,12 @@ public class LayoutController {
 	 * Wird bei Auswahl der Bänder Anzahl aufgerufen.
 	 */
 	public void handleMenuSlider() {
+		Slider[] sliders = {slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8, slider9, slider10};
 		Toggle selectedToggle = toggleGroupSlider.getSelectedToggle();
 
 		if(selectedToggle == radioMenuItemSlider5) {
 
-			// TODO setCoefficicentCount(5);
+			soundProcessor.setNumberOfEqBands(5);
 			// Slider ausblenden
 			slider6.setVisible(false);
 			slider7.setVisible(false);
@@ -106,15 +107,13 @@ public class LayoutController {
 			slider9.setManaged(false);
 			slider10.setManaged(false);
 			// Werte zurücksetzen
-			slider6.setValue(0);
-			slider7.setValue(0);
-			slider8.setValue(0);
-			slider9.setValue(0);
-			slider10.setValue(0);
+			for(Slider s : sliders) {
+				s.setValue(0);
+			}
 		}
 		else if(selectedToggle == radioMenuItemSlider7) {
 
-			// TODO setCoefficicentCount(7);
+			soundProcessor.setNumberOfEqBands(7);
 			// Slider einblenden
 			slider6.setVisible(true);
 			slider7.setVisible(true);
@@ -130,13 +129,13 @@ public class LayoutController {
 			slider9.setManaged(false);
 			slider10.setManaged(false);
 			// Werte zurücksetzen
-			slider8.setValue(0);
-			slider9.setValue(0);
-			slider10.setValue(0);
+			for(Slider s : sliders) {
+				s.setValue(0);
+			}
 		}
 		else if(selectedToggle == radioMenuItemSlider10) {
 
-			// TODO setCoefficicentCount(10);
+			soundProcessor.setNumberOfEqBands(10);
 			// Slider einblenden
 			slider6.setVisible(true);
 			slider7.setVisible(true);
@@ -149,6 +148,10 @@ public class LayoutController {
 			slider8.setManaged(true);
 			slider9.setManaged(true);
 			slider10.setManaged(true);
+			// Werte zurücksetzen
+			for(Slider s : sliders) {
+				s.setValue(0);
+			}
 		}
 	}
 
@@ -159,16 +162,16 @@ public class LayoutController {
 		Toggle selectedToggle = toggleGroupBuffer.getSelectedToggle();
 
 		if(selectedToggle == radioMenuItemBuffer1024) {
-			// TODO setBufferSize(1024);
+			soundProcessor.setFramesInBuffer(1024);
 		}
 		else if(selectedToggle == radioMenuItemBuffer4096) {
-			// TODO setBufferSize(4096);
+			soundProcessor.setFramesInBuffer(4096);
 		}
 		else if(selectedToggle == radioMenuItemBuffer8192) {
-			// TODO setBufferSize(8192);
+			soundProcessor.setFramesInBuffer(8192);
 		}
 		else if(selectedToggle == radioMenuItemBuffer16384) {
-			// TODO setBufferSize(16384);
+			soundProcessor.setFramesInBuffer(16384);
 		}
 	}
 
@@ -177,61 +180,19 @@ public class LayoutController {
 	 * @param gain Die gewählte Verstärkung.
 	 */
 	private void setSliderGain(int gain) {
+		Slider[] sliders = {slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8, slider9, slider10};
 		// Anzeige am Slider
 		labeldBTopLeft.setText(gain + " dB");
 		labeldBBottomLeft.setText("-" + gain + " dB");
 		labeldBTopRight.setText(gain + " dB");
 		labeldBBottomRight.setText("-" + gain + " dB");
 		// Slider Werte
-		slider1.setMin(-gain);
-		slider1.setMax(gain);
-		slider1.setBlockIncrement(gain/10);
-		slider1.setMajorTickUnit(gain);
-
-		slider2.setMin(-gain);
-		slider2.setMax(gain);
-		slider2.setBlockIncrement(gain/10);
-		slider2.setMajorTickUnit(gain);
-
-		slider3.setMin(-gain);
-		slider3.setMax(gain);
-		slider3.setBlockIncrement(gain/10);
-		slider3.setMajorTickUnit(gain);
-
-		slider4.setMin(-gain);
-		slider4.setMax(gain);
-		slider4.setBlockIncrement(gain/10);
-		slider4.setMajorTickUnit(gain);
-
-		slider5.setMin(-gain);
-		slider5.setMax(gain);
-		slider5.setBlockIncrement(gain/10);
-		slider5.setMajorTickUnit(gain);
-
-		slider6.setMin(-gain);
-		slider6.setMax(gain);
-		slider6.setBlockIncrement(gain/10);
-		slider6.setMajorTickUnit(gain);
-
-		slider7.setMin(-gain);
-		slider7.setMax(gain);
-		slider7.setBlockIncrement(gain/10);
-		slider7.setMajorTickUnit(gain);
-
-		slider8.setMin(-gain);
-		slider8.setMax(gain);
-		slider8.setBlockIncrement(gain/10);
-		slider8.setMajorTickUnit(gain);
-
-		slider9.setMin(-gain);
-		slider9.setMax(gain);
-		slider9.setBlockIncrement(gain/10);
-		slider9.setMajorTickUnit(gain);
-
-		slider10.setMin(-gain);
-		slider10.setMax(gain);
-		slider10.setBlockIncrement(gain/10);
-		slider10.setMajorTickUnit(gain);
+		for(Slider s : sliders) {
+			s.setMin(-gain);
+			s.setMax(gain);
+			s.setBlockIncrement(gain/10);
+			s.setMajorTickUnit(gain);
+		}
 	}
 
 	/*
@@ -378,7 +339,7 @@ public class LayoutController {
 	public void setClipping(boolean clipping) {
 		if(clipping) {
 			System.out.println("Clipping!");
-			//labelClipping.setText("Clipping!");
+			// TODO labelClipping.setText("Clipping!");
 		}
 		else {
 			//labelClipping.setText("");

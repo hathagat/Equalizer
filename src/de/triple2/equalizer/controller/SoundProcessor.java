@@ -18,9 +18,12 @@ public class SoundProcessor {
 	// abzuspielende Audio Line
 	private SourceDataLine soundLine = null;
 	// Array mit Slider Werten
-	private double bandDbCoefficients[] = new double[10];
+	private double bandDbCoefficients[];
 	// der LayoutController des Programms
 	private LayoutController layout;
+
+	private int framesInBuffer = 8192;
+	private int numberOfEqBands = 10;
 
 	/**
 	 * Konstruktor
@@ -28,6 +31,30 @@ public class SoundProcessor {
 	 */
 	public SoundProcessor(LayoutController layout) {
 		this.layout = layout;
+	}
+
+	public int getFramesInBuffer() {
+		return framesInBuffer;
+	}
+
+	/**
+	 * Danach muss playSound von neuem aufgerufen werden!
+	 * @param framesInBuffer
+	 */
+	public void setFramesInBuffer(int framesInBuffer) {
+		this.framesInBuffer = framesInBuffer;
+	}
+
+	public int getNumberOfEqBands() {
+		return numberOfEqBands;
+	}
+
+	/**
+	 * Danach muss playSound von neuem aufgerufen werden!
+	 * @param framesInBuffer
+	 */
+	public void setNumberOfEqBands(int numberOfEqBands) {
+		this.numberOfEqBands = numberOfEqBands;
 	}
 
 	/**
@@ -145,9 +172,8 @@ public class SoundProcessor {
 
 	public void playSound(File audioFile) {
 
-		int numberOfEqBands = 10;
-
 		try {
+			bandDbCoefficients = new double[numberOfEqBands];
 			WavFile wavFile = WavFile.openWavFile(audioFile);
 
 			wavFile.display();
@@ -163,7 +189,8 @@ public class SoundProcessor {
 
 			int bytesPerFrame = audioFormat.getFrameSize();
 
-			int framesInBuffer = 1024;
+			//Zeitlänge eines Buffers: 2048/fs
+			//int framesInBuffer = 8192;
 			int numBytes = framesInBuffer * bytesPerFrame; // Puffergröße
 
 			boolean isMono = (audioFormat.getChannels() == 1) ? true : false;
@@ -202,7 +229,8 @@ public class SoundProcessor {
 			// constantValue,constantValue,constantValue,constantValue,constantValue};
 
 			// double bandDbCoefficients[] = {0,-5,0,0,0,0,0,0,0,7,0};
-			Equalizer eq = new Equalizer((int) wavFile.getSampleRate(), numberOfEqBands, bufferSize);
+			Equalizer eqL = new Equalizer((int) wavFile.getSampleRate(), numberOfEqBands, bufferSize);
+			Equalizer eqR = new Equalizer((int) wavFile.getSampleRate(), numberOfEqBands, bufferSize);
 			FFT fft = new FFT(bufferSize);
 
 			int framesRead = -1;
@@ -225,8 +253,8 @@ public class SoundProcessor {
 					// fülle Array mit aktuellen Slider Werten
 					setCurrentSliderValues();
 
-					eq.applyEQ(bandDbCoefficients, sampleBufferRealLeft, fft);
-					eq.applyEQ(bandDbCoefficients, sampleBufferRealRight, fft);
+					eqL.applyEQ(bandDbCoefficients, sampleBufferRealLeft, fft);
+					eqR.applyEQ(bandDbCoefficients, sampleBufferRealRight, fft);
 
 					// byte-array beschreiben
 
@@ -279,7 +307,7 @@ public class SoundProcessor {
 					// fülle Array mit aktuellen Slider Werten
 					setCurrentSliderValues();
 
-					eq.applyEQ(bandDbCoefficients, sampleBufferRealLeft, fft);
+					eqL.applyEQ(bandDbCoefficients, sampleBufferRealLeft, fft);
 
 					byte[] audioBytes = new byte[framesRead * bytesPerFrame];
 					short sample;

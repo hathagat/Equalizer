@@ -182,12 +182,12 @@
                   </Menu>
                   <Menu fx:id="menuBuffer" mnemonicParsing="false" text="Buffergröße">
                      <items>
-                        <RadioMenuItem fx:id="radioMenuItemBuffer1024" mnemonicParsing="false" onAction="#handleMenuBuffer" selected="true" text="1024 Frames">
+                        <RadioMenuItem fx:id="radioMenuItemBuffer1024" mnemonicParsing="false" onAction="#handleMenuBuffer" text="1024 Frames">
                            <toggleGroup>
                               <ToggleGroup fx:id="toggleGroupBuffer" />
                            </toggleGroup></RadioMenuItem>
                         <RadioMenuItem fx:id="radioMenuItemBuffer4096" mnemonicParsing="false" onAction="#handleMenuBuffer" text="4096 Frames" toggleGroup="$toggleGroupBuffer" />
-                        <RadioMenuItem fx:id="radioMenuItemBuffer8192" mnemonicParsing="false" onAction="#handleMenuBuffer" text="8192 Frames" toggleGroup="$toggleGroupBuffer" />
+                        <RadioMenuItem fx:id="radioMenuItemBuffer8192" mnemonicParsing="false" onAction="#handleMenuBuffer" selected="true" text="8192 Frames" toggleGroup="$toggleGroupBuffer" />
                         <RadioMenuItem fx:id="radioMenuItemBuffer16384" mnemonicParsing="false" onAction="#handleMenuBuffer" text="16384 Frames" toggleGroup="$toggleGroupBuffer" />
                      </items>
                   </Menu>
