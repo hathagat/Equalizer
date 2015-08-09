@@ -15,120 +15,115 @@ import de.triple2.equalizer.view.LayoutController;
 
 public class SoundProcessor {
 
-	// abzuspielende Audio Line
-	private SourceDataLine soundLine = null;
-	// Array mit Slider Werten
-	private double bandDbCoefficients[];
-	// der LayoutController des Programms
-	private LayoutController layout;
+    // abzuspielende Audio-Line
+    private SourceDataLine soundLine = null;
+    // Array mit Slider-Werten
+    private double bandDbCoefficients[];
+    // der LayoutController des Programms
+    private final LayoutController layout;
 
-	private int framesInBuffer = 8192;
-	private int numberOfEqBands = 10;
+	// Anzahl der Frames, die in Buffer aufzunehmen sind
+    private int framesInBuffer = 8192;
+
+	// Anzahl der EQ bänder
+    private int numberOfEqBands = 10;
+
+	//ermöglicht Einlesen von Audiodateien
+    private AudioInputStream audioInputStream = null;
+
+	// Klasse zum Zugriff auf die Samples
+    private WavFile wavFile = null;
+    private boolean pressedStop = false;
+
+	private Equalizer eqL;
+	private Equalizer eqR;
+
+	private double[] sampleBufferRealStereo;
+	private int bufferSize;
+	private double[] sampleBufferRealLeft;
+	private double[] sampleBufferRealRight;
+	private double[] sampleBufferImag;
+	private double constantValue;
+	private int bytesPerFrame;
+	private int numBytes;
+	private boolean isMono;
+	private boolean isBigEndian;
 
 	/**
 	 * Konstruktor
-	 * @param layout Der LayoutController des Programms.
+	 *
+	 * @param layout
+	 *            Der LayoutController des Programms.
 	 */
 	public SoundProcessor(LayoutController layout) {
 		this.layout = layout;
+		eqL = new Equalizer();
+		eqR = new Equalizer();
+
 	}
 
+	/**
+	* Getter für die Anzahl der Frames im Buffer.
+	*/
 	public int getFramesInBuffer() {
 		return framesInBuffer;
 	}
 
-	/**
-	 * Danach muss playSound von neuem aufgerufen werden!
-	 * @param framesInBuffer
-	 */
+    /**
+     * Setter für die Anzahl der Frames im Buffer.
+     * Achtung!
+     * Danach muss der Equalizer neu eingestellt werden, also z.B. playSound() aufgerufen werden.
+	 *
+     * @param framesInBuffer
+     */
 	public void setFramesInBuffer(int framesInBuffer) {
 		this.framesInBuffer = framesInBuffer;
 	}
 
+	/**
+	* Getter für die Anzahl der genutzten EQ-Bänder.
+	*/
 	public int getNumberOfEqBands() {
 		return numberOfEqBands;
 	}
 
-	/**
-	 * Danach muss playSound von neuem aufgerufen werden!
-	 * @param framesInBuffer
-	 */
+    /**
+     * Setter für die Anzahl der genutzten EQ-Bänder.
+     * Achtung!
+     * Danach muss der Equalizer neu eingestellt werden, also z.B. playSound() aufgerufen werden.
+	 *
+     * @param framesInBuffer
+     */
 	public void setNumberOfEqBands(int numberOfEqBands) {
+		int sr = (int) wavFile.getSampleRate();
+
+		eqL.initializeBands(sr, numberOfEqBands);
+		eqR.initializeBands(sr, numberOfEqBands);
 		this.numberOfEqBands = numberOfEqBands;
 	}
 
-	/**
-	 * @deprecated Liest eine Audio Datei ein, übergibt sie dem Equalizer und
-	 *             spielt sie ab.
-	 * @param soundFile
-	 *            Die Audiodatei.
-	 */
-	public void playSoundOld(File soundFile) {
-
-		try {
-			// Input Stream
-			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
-
-			int bytesPerFrame = audioInputStream.getFormat().getFrameSize();
-
-			// Erstellung der abzuspielenden Audio Line
-			AudioFormat audioFormat = audioInputStream.getFormat();
-			DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
-			soundLine = (SourceDataLine) AudioSystem.getLine(info);
-			// Öffnen der Line
-			soundLine.open(audioFormat);
-			// Starten der Line
-			// Passiert erst, wennaudioBytes Array befüllt wurde s.u.
-			soundLine.start();
-
-			// Einige Audio Dateien haben keine festgelegte Frame Größe.
-			if (bytesPerFrame == AudioSystem.NOT_SPECIFIED) {
-				// Dann wird feste Anzahl an Bytes eingelesen.
-				bytesPerFrame = 1;
-			}
-
-			// Byte Array der Größe von 1024 Frames.
-			// Zum sukzessiven speichern von Chunks aus dem Input Stream.
-			int numBytes = 1024 * bytesPerFrame;
-			byte[] audioBytes = new byte[numBytes];
-
-			try {
-				int totalFramesRead = 0;
-				int numBytesRead = 0;
-				int numFramesRead = 0;
-
-				// Lese numBytes an Bytes der Datei ein.
-				// -1, falls keine Daten mehr zum Lesen vorhanden sind.
-				while (numBytesRead != -1) {
-					numBytesRead = audioInputStream.read(audioBytes);
-					// Berechne die Anzahl an Frames, die schon gelesen wurden.
-					numFramesRead = numBytesRead / bytesPerFrame;
-					totalFramesRead += numFramesRead;
-
-					// Veränderung der Audio Daten im Audio Bytes Array
-					// TODO !!! EQUALIZER !!!
-
-					// TODO evtl. neues Array aus den Daten vom Equalizer machen
-					// und das dann in die SoundLine schreiben...
-					if (numBytesRead > 0) {
-						// Schreibt die Audio Daten zum Abspielen in den Mixer.
-						soundLine.write(audioBytes, 0, numBytesRead);
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Beendet das Abspielen der Datei.
-	 */
-	public void stopSound() {
-		soundLine.stop();
-	}
+    /**
+     * Beendet das Abspielen der Datei.
+     */
+    public void stopSound() {
+        pressedStop = true;
+        soundLine.stop();
+        soundLine.drain();
+        soundLine.close();
+        if (audioInputStream != null) {
+            try {
+                audioInputStream.close();
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+        } else if (wavFile != null) {
+            try {
+                wavFile.close();
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 	/**
 	 * Liefert die Länge einer Audio Datei in Sekunden.
@@ -170,100 +165,144 @@ public class SoundProcessor {
 		}
 	}
 
-	public void playSound(File audioFile) {
-
+	/**
+	 * Wird aufgerufen, sobald eine Datei eingelesen werden soll.
+	 */
+	public void initializeEqualizer(File audioFile) {
 		try {
+			// Array initialisieren
 			bandDbCoefficients = new double[numberOfEqBands];
-			WavFile wavFile = WavFile.openWavFile(audioFile);
+			wavFile = WavFile.openWavFile(audioFile);
 
-			wavFile.display();
-			wavFile.getValidBits();
-			System.out.println("----");
+			//Info zur Wave-Datei ausgeben
+            //wavFile.display();
+            //wavFile.getValidBits();
+            //System.out.println("----");
 
 			///////////////////////////////////////////////////////
 
 			// Audio-Format auslesen
-			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(audioFile);
+			audioInputStream = AudioSystem.getAudioInputStream(audioFile);
 			// Erstellung der abzuspielenden Audio Line
 			AudioFormat audioFormat = audioInputStream.getFormat();
 
-			int bytesPerFrame = audioFormat.getFrameSize();
+			bytesPerFrame = audioFormat.getFrameSize();
 
-			//Zeitlänge eines Buffers: 2048/fs
-			//int framesInBuffer = 8192;
-			int numBytes = framesInBuffer * bytesPerFrame; // Puffergröße
+			// Zeitlänge eines Buffers: 2048/fs
+			// int framesInBuffer = 8192;
 
-			boolean isMono = (audioFormat.getChannels() == 1) ? true : false;
-			boolean isBigEndian = audioFormat.isBigEndian();
+			numBytes = framesInBuffer * bytesPerFrame; // Puffergröße in Byte
 
-			DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
-			soundLine = (SourceDataLine) AudioSystem.getLine(info);
-			// Öffnen der Line
-			soundLine.open(audioFormat);
-			// Starten der Line
-			// Passiert erst, wennaudioBytes Array befüllt wurde s.u.
-			soundLine.start();
+			isMono = (audioFormat.getChannels() == 1) ? true : false;
+			//Byte-Kodierung der Samples ist auf 2 Varianten möglich
+            isBigEndian = audioFormat.isBigEndian();
 
-			// Einige Audio Dateien haben keine festgelegte Frame Größe.
-			if (bytesPerFrame == AudioSystem.NOT_SPECIFIED) {
-				// Dann wird feste Anzahl an Bytes eingelesen.
-				bytesPerFrame = 1;
-			}
+			//Info über das Audioformat (wird für Ausgabe benötigt)
+            DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
+            soundLine = (SourceDataLine) AudioSystem.getLine(info);
+
+            // Öffnen der Line
+            soundLine.open(audioFormat);
+            // Starten der Line
+            // Passiert erst, wennaudioBytes Array befüllt wurde s.u.
+            soundLine.start();
+
+            // Einige Audio Dateien haben keine festgelegte Frame Größe.
+            if (bytesPerFrame == AudioSystem.NOT_SPECIFIED) {
+                // Dann wird feste Anzahl an Bytes eingelesen.
+                bytesPerFrame = 1;
+            }
 
 			///////////////////////////////////////////////////////////////
 
-			int bufferSize = framesInBuffer; // sollte Zweierpotenz sein
+			bufferSize = framesInBuffer; // sollte Zweierpotenz sein
 
-			double[] sampleBufferRealStereo = new double[2 * bufferSize];
-
-			double[] sampleBufferRealLeft = new double[bufferSize];
-			double[] sampleBufferRealRight = new double[bufferSize];
-			double[] sampleBufferImag = new double[bufferSize];
+			// Buffer für verschiedene Arten
+			sampleBufferRealStereo = new double[2 * bufferSize];
+			sampleBufferRealLeft = new double[bufferSize];
+			sampleBufferRealRight = new double[bufferSize];
+			sampleBufferImag = new double[bufferSize];
 
 			// liest 100 Samples, schreibt sie in sampleBufferReal rein
 
 			// EQ initialisieren
-			double constantValue = 0;
+			constantValue = 0;
 			// double bandDbCoefficients[] =
 			// {constantValue,constantValue,constantValue,constantValue,constantValue,
 			// constantValue,constantValue,constantValue,constantValue,constantValue};
 
 			// double bandDbCoefficients[] = {0,-5,0,0,0,0,0,0,0,7,0};
-			Equalizer eqL = new Equalizer((int) wavFile.getSampleRate(), numberOfEqBands, bufferSize);
-			Equalizer eqR = new Equalizer((int) wavFile.getSampleRate(), numberOfEqBands, bufferSize);
+
+			int sr = (int) wavFile.getSampleRate();
+
+			eqL.initializeBands(sr, numberOfEqBands);
+			eqL.calculateBandIndices(sr, bufferSize);
+			eqR.initializeBands(sr, numberOfEqBands);
+			eqR.calculateBandIndices(sr, bufferSize);
+
+        } catch (final Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (audioInputStream != null) {
+                try {
+                    audioInputStream.close();
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+	}
+
+	/**
+	 * Übergibt eine Audio-Datei dem Equalizer und spielt sie ab.
+	 * @param soundFile Die Audiodatei.
+	 */
+	public void playSound(File audioFile) {
+
+		try {
 			FFT fft = new FFT(bufferSize);
 
+			//Anzahl gelesener Frames
 			int framesRead = -1;
 			// Unterscheidung Stereo/Mono
 			if (!isMono) {
 				while (framesRead != 0) {
-					framesRead = wavFile.readFrames(sampleBufferRealStereo, bufferSize);
+					// Frames einlesen
+                    framesRead = wavFile.readFrames(sampleBufferRealStereo, bufferSize);
 
-					// wavFile.readFrames(intBuffer,bufferSize);
-
-					// Aufteilen in links/rechts
-					for (int i = 0; i < 2 * bufferSize; i++) {
-						if (i % 2 == 0) {
-							sampleBufferRealLeft[i / 2] = sampleBufferRealStereo[i];
-						} else {
-							sampleBufferRealRight[(int) (Math.floor(i / 2))] = sampleBufferRealStereo[i];
-						}
-					}
+                    // Aufteilen in links/rechts (bei Stereo)
+                    for (int i = 0; i < 2 * bufferSize; i++) {
+                        if (i % 2 == 0) {
+                            sampleBufferRealLeft[i / 2] = sampleBufferRealStereo[i];
+                        } else {
+                            sampleBufferRealRight[(int) (Math.floor(i / 2))] =
+                                    sampleBufferRealStereo[i];
+                        }
+                    }
 
 					// fülle Array mit aktuellen Slider Werten
 					setCurrentSliderValues();
 
+					// Equalizer anwenden (übergebenes Array im 2. Argument wird modifiziert)
 					eqL.applyEQ(bandDbCoefficients, sampleBufferRealLeft, fft);
 					eqR.applyEQ(bandDbCoefficients, sampleBufferRealRight, fft);
 
-					// byte-array beschreiben
-
+                    // Byte-Array initialisieren, das am Ende ausgegeben werden soll
 					byte[] audioBytes = new byte[framesRead * bytesPerFrame];
+
+					// einzelne Samples für links/rechts, die dann in Bytekanal zu schreiben
 					short leftSample;
-					short rightSample;
+                    short rightSample;
+
+                 // Schreiben aller veränderten Samples in audioBytes
 					for (int i = 0; i < framesRead; i++) {
+
 						leftSample = convertSampleTo16BitShort(sampleBufferRealLeft[i]);
 
+						//Jetzt müssen Bytevertauschungen anhand der Endianness vorgenommen
+						//werden. Wenn man das nicht macht, kommt einfach nur Rauschen raus.
+						//(das als Ursache zu finden hat wirklich lange gedauert, das
+						//kann ich versichern...)
 						if (isBigEndian) {
 							// Alter Schwede, ich hätte nicht gedacht, dass ich
 							// mich hierzu auch mit Bitshifting
@@ -297,20 +336,24 @@ public class SoundProcessor {
 							audioBytes[4 * i + 2] = (byte) rightSample;
 						}
 					}
-
+					//Ausgabe des der in audioBytes befindlichen Daten
 					soundLine.write(audioBytes, 0, audioBytes.length);
 				}
 			} else {
 				while (framesRead != 0) {
+					// Frames einlesen
 					framesRead = wavFile.readFrames(sampleBufferRealLeft, bufferSize);
 
 					// fülle Array mit aktuellen Slider Werten
 					setCurrentSliderValues();
 
+					//Equalizer anwenden (übergebenes Array im 2. Argument wird modifiziert)
 					eqL.applyEQ(bandDbCoefficients, sampleBufferRealLeft, fft);
 
 					byte[] audioBytes = new byte[framesRead * bytesPerFrame];
 					short sample;
+
+					// Schreiben aller veränderten Samples in audioBytes
 					for (int i = 0; i < framesRead; i++) {
 						sample = convertSampleTo16BitShort(sampleBufferRealLeft[i]);
 						if (isBigEndian) {
@@ -321,40 +364,66 @@ public class SoundProcessor {
 							audioBytes[2 * i] = (byte) sample;
 						}
 					}
+					//Ausgabe des der in audioBytes befindlichen Daten
 					soundLine.write(audioBytes, 0, audioBytes.length);
 				}
 			}
-
-			soundLine.stop();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		    //soundLine und Dateistrom schließen
+            soundLine.stop();
+            wavFile.close();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (audioInputStream != null) {
+                try {
+                    audioInputStream.close();
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 	}
 
+	/**
+	* Führt eine Konvertierung eines double-Wertes zwischen -1 und +1
+	* zu einem 16-bit-short aus. Wenn der double-Wert außerhalb dieser Grenzen liegt,
+	* tritt Clipping auf und das Signal wird auf +/- 1 gesetzt.
+	*
+	* Bei der Konvertierung erfolgt außerdem eine Skalierung in das
+	* Intervall zwischen dem kleinstmöglichen und größtmöglichen Wert, den eine
+	* 16-bit-Zahl annehmen kann. Dies wird benötigt, um die 16 Bit später in
+	* zwei 8-Bit-Blöcke aufzuteilen.
+	* @param d Zu konvertierender double-Wert
+	* @return Eine short-Variable zwischen Short.MIN_VALUE und Short.MAX_VALUE
+	*/
 	private short convertSampleTo16BitShort(double d) {
 		if (d > 1) {
 			d = 1;
 			layout.setClipping(true);
-		}
-		else if (d < -1) {
+		} else if (d < -1) {
 			d = -1;
 			layout.setClipping(true);
-		}
-		else {
+		} else {
 			layout.setClipping(false);
 		}
 		return (short) ((Short.MAX_VALUE - Short.MIN_VALUE) * (d + 1) / 2 + Short.MIN_VALUE);
 	}
 
 	/**
-	 * Passt die dem Equalizer übergebenen Array Werte
-	 * an die vom Nutzer gewählten an.
+	 * Passt die dem Equalizer übergebenen Array Werte an die vom Nutzer gewählten an.
 	 */
 	private void setCurrentSliderValues() {
 
 		for (int i = 0; i < bandDbCoefficients.length; i++) {
-			bandDbCoefficients[i] = layout.getSliderValue(i+1);
+			bandDbCoefficients[i] = layout.getSliderValue(i + 1);
 		}
+	}
+
+	/**
+	 * Ermittelt die vom Equalizer berechneten Frequenzen der einzelnen Bänder.
+	 * @return Integer-Array mit den Frequenzen.
+	 */
+	public int[] getFrequencies() {
+		return eqL.getFrequenciesToShow();
 	}
 }

@@ -32,6 +32,7 @@ public class SoundService extends Service<SoundProcessor> {
 		return new Task<SoundProcessor>(){
 			@Override
 			protected SoundProcessor call() throws Exception {
+				soundProcessor.initializeEqualizer(music);
 				soundProcessor.playSound(music);
 				return soundProcessor;
 			}
