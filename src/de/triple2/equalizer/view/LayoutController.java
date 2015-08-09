@@ -4,6 +4,7 @@ import java.io.File;
 
 import de.triple2.equalizer.controller.SoundProcessor;
 import de.triple2.equalizer.controller.SoundService;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -14,6 +15,9 @@ import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 
 /**
@@ -29,8 +33,10 @@ public class LayoutController {
 	public RadioMenuItem radioMenuItemSlider5, radioMenuItemSlider7, radioMenuItemSlider10;
 	public RadioMenuItem radioMenuItemBuffer1024, radioMenuItemBuffer4096, radioMenuItemBuffer8192, radioMenuItemBuffer16384;
 	// Slider
+	public GridPane gridPaneSlider;
 	public Label labeldBTopLeft, labeldBBottomLeft, labeldBTopRight, labeldBBottomRight;
 	public Slider slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8, slider9, slider10;
+	public Label labelSlider1, labelSlider2, labelSlider3, labelSlider4, labelSlider5, labelSlider6, labelSlider7, labelSlider8, labelSlider9, labelSlider10;
 	// Media Player
 	public Button buttonPlay;
 	public Label labelClipping, labelName, labelTime;
@@ -56,6 +62,10 @@ public class LayoutController {
 			labelName.setText("Datei:\n" + file.getName());
 			labelTime.setText("Länge:\n" + soundProcessor.getLength(file) + " Sekunden");
 			buttonPlay.setDisable(false);
+
+			soundProcessor.initializeEqualizer(file);
+			// Zeige die Frequenzen der Bänder an.
+			changeFrequencies(-1);
 		}
 	}
 
@@ -89,11 +99,34 @@ public class LayoutController {
 	 */
 	public void handleMenuSlider() {
 		Slider[] sliders = {slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8, slider9, slider10};
-		Toggle selectedToggle = toggleGroupSlider.getSelectedToggle();
+		Toggle selectedToggle = toggleGroupSlider.getSelectedToggle();		
+		ObservableList<ColumnConstraints> columnConstraints = gridPaneSlider.getColumnConstraints();
 
+		// Bänder konfigurieren
 		if(selectedToggle == radioMenuItemSlider5) {
+			// Frequenzen ändern
+			changeFrequencies(5);
+			
+			// Spaltenbreite anpassen
+			for(int i=1; i<columnConstraints.size()-1; i++) {
+				if(i>=6) {
+					columnConstraints.get(i).setHgrow(Priority.NEVER);
+				}
+			}
 
-			soundProcessor.setNumberOfEqBands(5);
+			// Label ausblenden
+			labelSlider6.setVisible(false);
+			labelSlider7.setVisible(false);
+			labelSlider8.setVisible(false);
+			labelSlider9.setVisible(false);
+			labelSlider10.setVisible(false);
+			// reservierten Platz frei machen
+			labelSlider6.setManaged(false);
+			labelSlider7.setManaged(false);
+			labelSlider8.setManaged(false);
+			labelSlider9.setManaged(false);
+			labelSlider10.setManaged(false);
+
 			// Slider ausblenden
 			slider6.setVisible(false);
 			slider7.setVisible(false);
@@ -106,14 +139,36 @@ public class LayoutController {
 			slider8.setManaged(false);
 			slider9.setManaged(false);
 			slider10.setManaged(false);
-			// Werte zurücksetzen
-			for(Slider s : sliders) {
-				s.setValue(0);
-			}
 		}
 		else if(selectedToggle == radioMenuItemSlider7) {
+			// Frequenzen ändern
+			changeFrequencies(7);
+			
+			// Spaltenbreite anpassen
+			for(int i=1; i<columnConstraints.size()-1; i++) {
+				if(i>=6 && i<=7) {
+					columnConstraints.get(i).setHgrow(Priority.SOMETIMES);
+				}
+				else if(i>=8) {
+					columnConstraints.get(i).setHgrow(Priority.NEVER);
+				}
+			}
 
-			soundProcessor.setNumberOfEqBands(7);
+			// Label einblenden
+			labelSlider6.setVisible(true);
+			labelSlider7.setVisible(true);
+			// Platz reservieren
+			labelSlider6.setManaged(true);
+			labelSlider7.setManaged(true);
+			// Label ausblenden
+			labelSlider8.setVisible(false);
+			labelSlider9.setVisible(false);
+			labelSlider10.setVisible(false);
+			// reservierten Platz frei machen
+			labelSlider8.setManaged(false);
+			labelSlider9.setManaged(false);
+			labelSlider10.setManaged(false);
+
 			// Slider einblenden
 			slider6.setVisible(true);
 			slider7.setVisible(true);
@@ -128,14 +183,31 @@ public class LayoutController {
 			slider8.setManaged(false);
 			slider9.setManaged(false);
 			slider10.setManaged(false);
-			// Werte zurücksetzen
-			for(Slider s : sliders) {
-				s.setValue(0);
-			}
 		}
 		else if(selectedToggle == radioMenuItemSlider10) {
+			// Frequenzen ändern
+			changeFrequencies(10);
+			
+			// Spaltenbreite anpassen
+			for(int i=1; i<columnConstraints.size()-1; i++) {
+				if(i>=6) {
+					columnConstraints.get(i).setHgrow(Priority.SOMETIMES);
+				}
+			}
 
-			soundProcessor.setNumberOfEqBands(10);
+			// Label einblenden
+			labelSlider6.setVisible(true);
+			labelSlider7.setVisible(true);
+			labelSlider8.setVisible(true);
+			labelSlider9.setVisible(true);
+			labelSlider10.setVisible(true);
+			// Platz reservieren
+			labelSlider6.setManaged(true);
+			labelSlider7.setManaged(true);
+			labelSlider8.setManaged(true);
+			labelSlider9.setManaged(true);
+			labelSlider10.setManaged(true);
+
 			// Slider einblenden
 			slider6.setVisible(true);
 			slider7.setVisible(true);
@@ -148,9 +220,26 @@ public class LayoutController {
 			slider8.setManaged(true);
 			slider9.setManaged(true);
 			slider10.setManaged(true);
-			// Werte zurücksetzen
-			for(Slider s : sliders) {
-				s.setValue(0);
+		}
+		// eingestellte Werte zurücksetzen
+		for(Slider s : sliders) {
+			s.setValue(0);
+		}
+	}
+
+	private void changeFrequencies(int bandCount) {
+		// falls Datei vorhanden
+		if(file!=null) {
+			// falls sinnvolle Anzahl Bänder übergeben.
+			if(bandCount != -1) {
+				soundProcessor.setNumberOfEqBands(bandCount);
+			}
+
+			Label[] labels = {labelSlider1, labelSlider2, labelSlider3, labelSlider4, labelSlider5, labelSlider6, labelSlider7, labelSlider8, labelSlider9, labelSlider10};
+			int[] frequencies = soundProcessor.getFrequencies();
+
+			for(int i=0; i<frequencies.length; i++) {
+				labels[i].setText(Integer.toString(frequencies[i]) + " Hz");
 			}
 		}
 	}
