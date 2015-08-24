@@ -177,7 +177,7 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Hilfe">
             <items>
-              <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" text="Über" />
+              <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" onAction="#handleMenuAbout" text="Über" />
             </items>
           </Menu>
         </menus>

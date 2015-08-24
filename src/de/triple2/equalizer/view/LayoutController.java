@@ -78,6 +78,22 @@ public class LayoutController {
 	}
 
 	/**
+	 * Wird bei Klick auf Über aufgerufen.
+	 */
+	public void handleMenuAbout() {
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.initOwner(Main.getStage());
+		alert.setTitle("Über");
+		alert.setHeaderText(null);
+		alert.setContentText("triple2 Equalizer \n\n"
+				+ "Version: 1.0 \n\n"
+				+ "Diese Anwendung wurde im Rahmen des Moduls Multimediale Signalverarbeitung "
+				+ "an der Hochschule Anhalt entwickelt. \n\n"
+				+ "(c) triple2 2015");
+		alert.showAndWait();
+	}
+
+	/**
 	 * Wird bei Auswahl der Verstärkung aufgerufen.
 	 */
 	public void handleMenuGain() {
@@ -99,14 +115,14 @@ public class LayoutController {
 	 */
 	public void handleMenuSlider() {
 		Slider[] sliders = {slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8, slider9, slider10};
-		Toggle selectedToggle = toggleGroupSlider.getSelectedToggle();		
+		Toggle selectedToggle = toggleGroupSlider.getSelectedToggle();
 		ObservableList<ColumnConstraints> columnConstraints = gridPaneSlider.getColumnConstraints();
 
 		// Bänder konfigurieren
 		if(selectedToggle == radioMenuItemSlider5) {
 			// Frequenzen ändern
 			changeFrequencies(5);
-			
+
 			// Spaltenbreite anpassen
 			for(int i=1; i<columnConstraints.size()-1; i++) {
 				if(i>=6) {
@@ -143,7 +159,7 @@ public class LayoutController {
 		else if(selectedToggle == radioMenuItemSlider7) {
 			// Frequenzen ändern
 			changeFrequencies(7);
-			
+
 			// Spaltenbreite anpassen
 			for(int i=1; i<columnConstraints.size()-1; i++) {
 				if(i>=6 && i<=7) {
@@ -187,7 +203,7 @@ public class LayoutController {
 		else if(selectedToggle == radioMenuItemSlider10) {
 			// Frequenzen ändern
 			changeFrequencies(10);
-			
+
 			// Spaltenbreite anpassen
 			for(int i=1; i<columnConstraints.size()-1; i++) {
 				if(i>=6) {
