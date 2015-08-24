@@ -26,6 +26,7 @@ public class SoundService extends Service<SoundProcessor> {
 		return soundProcessor;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	protected Task createTask() {
 		final SoundProcessor soundProcessor = getSoundProcessor();

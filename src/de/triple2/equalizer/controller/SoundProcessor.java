@@ -25,7 +25,7 @@ public class SoundProcessor {
 	// Anzahl der Frames, die in Buffer aufzunehmen sind
     private int framesInBuffer = 8192;
 
-	// Anzahl der EQ bänder
+	// Anzahl der EQ Bänder
     private int numberOfEqBands = 10;
 
 	//ermöglicht Einlesen von Audiodateien
@@ -33,7 +33,6 @@ public class SoundProcessor {
 
 	// Klasse zum Zugriff auf die Samples
     private WavFile wavFile = null;
-    private boolean pressedStop = false;
 
 	private Equalizer eqL;
 	private Equalizer eqR;
@@ -42,10 +41,7 @@ public class SoundProcessor {
 	private int bufferSize;
 	private double[] sampleBufferRealLeft;
 	private double[] sampleBufferRealRight;
-	private double[] sampleBufferImag;
-	private double constantValue;
 	private int bytesPerFrame;
-	private int numBytes;
 	private boolean isMono;
 	private boolean isBigEndian;
 
@@ -106,7 +102,6 @@ public class SoundProcessor {
      * Beendet das Abspielen der Datei.
      */
     public void stopSound() {
-        pressedStop = true;
         soundLine.stop();
         soundLine.drain();
         soundLine.close();
@@ -191,7 +186,7 @@ public class SoundProcessor {
 			// Zeitlänge eines Buffers: 2048/fs
 			// int framesInBuffer = 8192;
 
-			numBytes = framesInBuffer * bytesPerFrame; // Puffergröße in Byte
+			// numBytes = framesInBuffer * bytesPerFrame; // Puffergröße in Byte
 
 			isMono = (audioFormat.getChannels() == 1) ? true : false;
 			//Byte-Kodierung der Samples ist auf 2 Varianten möglich
@@ -221,12 +216,12 @@ public class SoundProcessor {
 			sampleBufferRealStereo = new double[2 * bufferSize];
 			sampleBufferRealLeft = new double[bufferSize];
 			sampleBufferRealRight = new double[bufferSize];
-			sampleBufferImag = new double[bufferSize];
+			// sampleBufferImag = new double[bufferSize];
 
 			// liest 100 Samples, schreibt sie in sampleBufferReal rein
 
 			// EQ initialisieren
-			constantValue = 0;
+			// constantValue = 0;
 			// double bandDbCoefficients[] =
 			// {constantValue,constantValue,constantValue,constantValue,constantValue,
 			// constantValue,constantValue,constantValue,constantValue,constantValue};
