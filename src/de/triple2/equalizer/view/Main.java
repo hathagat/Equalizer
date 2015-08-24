@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 /**
@@ -25,6 +26,7 @@ public class Main extends Application {
 
 		// Fenster
 		window.setScene(scene);
+		window.getIcons().add(new Image(Main.class.getClassLoader().getResourceAsStream("triple2.png"))); 
 		window.setTitle("triple2 Equalizer");
 		window.setMinWidth(576);
 		window.setMinHeight(320);
