@@ -34,6 +34,9 @@ public class SoundProcessor {
 	// Klasse zum Zugriff auf die Samples
     private WavFile wavFile = null;
 
+	// die Frequenzen, die in der UI für jedes EQ-Band anzuzeigen sind
+	private int[] frequenciesToShow;
+
 	private Equalizer eqL;
 	private Equalizer eqR;
 
@@ -56,108 +59,6 @@ public class SoundProcessor {
 		eqL = new Equalizer();
 		eqR = new Equalizer();
 
-	}
-
-	/**
-	* Getter für die Anzahl der Frames im Buffer.
-	*/
-	public int getFramesInBuffer() {
-		return framesInBuffer;
-	}
-
-    /**
-     * Setter für die Anzahl der Frames im Buffer.
-     * Achtung!
-     * Danach muss der Equalizer neu eingestellt werden, also z.B. playSound() aufgerufen werden.
-	 *
-     * @param framesInBuffer
-     */
-	public void setFramesInBuffer(int framesInBuffer) {
-		this.framesInBuffer = framesInBuffer;
-	}
-
-	/**
-	* Getter für die Anzahl der genutzten EQ-Bänder.
-	*/
-	public int getNumberOfEqBands() {
-		return numberOfEqBands;
-	}
-
-    /**
-     * Setter für die Anzahl der genutzten EQ-Bänder.
-     * Achtung!
-     * Danach muss der Equalizer neu eingestellt werden, also z.B. playSound() aufgerufen werden.
-	 *
-     * @param framesInBuffer
-     */
-	public void setNumberOfEqBands(int numberOfEqBands) {
-		int sr = (int) wavFile.getSampleRate();
-
-		eqL.initializeBands(sr, numberOfEqBands);
-		eqR.initializeBands(sr, numberOfEqBands);
-		this.numberOfEqBands = numberOfEqBands;
-	}
-
-    /**
-     * Beendet das Abspielen der Datei.
-     */
-    public void stopSound() {
-        soundLine.stop();
-        soundLine.drain();
-        soundLine.close();
-        if (audioInputStream != null) {
-            try {
-                audioInputStream.close();
-            } catch (final IOException e) {
-                e.printStackTrace();
-            }
-        } else if (wavFile != null) {
-            try {
-                wavFile.close();
-            } catch (final IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-	/**
-	 * Liefert die Länge einer Audio Datei in Sekunden.
-	 *
-	 * @param soundFile
-	 *            Die Audiodatei.
-	 * @return Die Länge in Sekunden.
-	 */
-	public int getLength(File soundFile) {
-		float durationInSeconds = 0;
-		try {
-			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
-			AudioFormat format = audioInputStream.getFormat();
-			long audioFileLength = soundFile.length();
-			int frameSize = format.getFrameSize();
-			float frameRate = format.getFrameRate();
-			durationInSeconds = (audioFileLength / (frameSize * frameRate));
-		} catch (UnsupportedAudioFileException | IOException e) {
-			e.printStackTrace();
-		}
-		// runde auf zwei Nachkommastellen
-		return Math.round(durationInSeconds);
-	}
-
-	/**
-	 * Liefert die Dateiendung einer Datei.
-	 *
-	 * @param file
-	 *            Die zu überprüfende Datei.
-	 * @return Die Dateiendung.
-	 */
-	public String getFileExtension(File file) {
-		String fileName = file.getName();
-
-		if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0) {
-			return fileName.substring(fileName.lastIndexOf(".") + 1);
-		} else {
-			return "";
-		}
 	}
 
 	/**
@@ -230,9 +131,9 @@ public class SoundProcessor {
 
 			int sr = (int) wavFile.getSampleRate();
 
-			eqL.initializeBands(sr, numberOfEqBands);
+			frequenciesToShow = eqL.initializeBands(sr, numberOfEqBands);
 			eqL.calculateBandIndices(sr, bufferSize);
-			eqR.initializeBands(sr, numberOfEqBands);
+			frequenciesToShow = eqR.initializeBands(sr, numberOfEqBands);
 			eqR.calculateBandIndices(sr, bufferSize);
 
         } catch (final Exception e) {
@@ -404,6 +305,108 @@ public class SoundProcessor {
 		return (short) ((Short.MAX_VALUE - Short.MIN_VALUE) * (d + 1) / 2 + Short.MIN_VALUE);
 	}
 
+    /**
+     * Beendet das Abspielen der Datei.
+     */
+    public void stopSound() {
+        soundLine.stop();
+        soundLine.drain();
+        soundLine.close();
+        if (audioInputStream != null) {
+            try {
+                audioInputStream.close();
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+        } else if (wavFile != null) {
+            try {
+                wavFile.close();
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+	/**
+	* Getter für die Anzahl der Frames im Buffer.
+	*/
+	public int getFramesInBuffer() {
+		return framesInBuffer;
+	}
+
+    /**
+     * Setter für die Anzahl der Frames im Buffer.
+     * Achtung!
+     * Danach muss der Equalizer neu eingestellt werden, also z.B. playSound() aufgerufen werden.
+	 *
+     * @param framesInBuffer
+     */
+	public void setFramesInBuffer(int framesInBuffer) {
+		this.framesInBuffer = framesInBuffer;
+	}
+
+	/**
+	* Getter für die Anzahl der genutzten EQ-Bänder.
+	*/
+	public int getNumberOfEqBands() {
+		return numberOfEqBands;
+	}
+
+    /**
+     * Setter für die Anzahl der genutzten EQ-Bänder.
+     * Achtung!
+     * Danach muss der Equalizer neu eingestellt werden, also z.B. playSound() aufgerufen werden.
+	 *
+     * @param framesInBuffer
+     */
+	public void setNumberOfEqBands(int numberOfEqBands) {
+		int sr = (int) wavFile.getSampleRate();
+
+		frequenciesToShow = eqL.initializeBands(sr, numberOfEqBands);
+		frequenciesToShow = eqR.initializeBands(sr, numberOfEqBands);
+		this.numberOfEqBands = numberOfEqBands;
+	}
+
+	/**
+	 * Liefert die Länge einer Audio Datei in Sekunden.
+	 *
+	 * @param soundFile
+	 *            Die Audiodatei.
+	 * @return Die Länge in Sekunden.
+	 */
+	public int getLength(File soundFile) {
+		float durationInSeconds = 0;
+		try {
+			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
+			AudioFormat format = audioInputStream.getFormat();
+			long audioFileLength = soundFile.length();
+			int frameSize = format.getFrameSize();
+			float frameRate = format.getFrameRate();
+			durationInSeconds = (audioFileLength / (frameSize * frameRate));
+		} catch (UnsupportedAudioFileException | IOException e) {
+			e.printStackTrace();
+		}
+		// runde auf zwei Nachkommastellen
+		return Math.round(durationInSeconds);
+	}
+
+	/**
+	 * Liefert die Dateiendung einer Datei.
+	 *
+	 * @param file
+	 *            Die zu überprüfende Datei.
+	 * @return Die Dateiendung.
+	 */
+	public String getFileExtension(File file) {
+		String fileName = file.getName();
+
+		if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0) {
+			return fileName.substring(fileName.lastIndexOf(".") + 1);
+		} else {
+			return "";
+		}
+	}
+
 	/**
 	 * Passt die dem Equalizer übergebenen Array Werte an die vom Nutzer gewählten an.
 	 */
@@ -419,6 +422,6 @@ public class SoundProcessor {
 	 * @return Integer-Array mit den Frequenzen.
 	 */
 	public int[] getFrequencies() {
-		return eqL.getFrequenciesToShow();
+		return frequenciesToShow;
 	}
 }
