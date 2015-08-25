@@ -45,6 +45,7 @@ public class LayoutController {
 	private final FileChooser fileChooser = new FileChooser();
 	private SoundProcessor soundProcessor = new SoundProcessor(this);
 	private SoundService soundService;
+	private int bandCount = 10;
 
 	/*
 	 * Menü Handling
@@ -65,7 +66,7 @@ public class LayoutController {
 
 			soundProcessor.initializeEqualizer(file);
 			// Zeige die Frequenzen der Bänder an.
-			changeFrequencies(-1);
+			changeFrequencies(bandCount);
 		}
 	}
 
@@ -120,8 +121,9 @@ public class LayoutController {
 
 		// Bänder konfigurieren
 		if(selectedToggle == radioMenuItemSlider5) {
+			bandCount = 5;
 			// Frequenzen ändern
-			changeFrequencies(5);
+			changeFrequencies(bandCount);
 
 			// Spaltenbreite anpassen
 			for(int i=1; i<columnConstraints.size()-1; i++) {
@@ -157,8 +159,9 @@ public class LayoutController {
 			slider10.setManaged(false);
 		}
 		else if(selectedToggle == radioMenuItemSlider7) {
+			bandCount = 7;
 			// Frequenzen ändern
-			changeFrequencies(7);
+			changeFrequencies(bandCount);
 
 			// Spaltenbreite anpassen
 			for(int i=1; i<columnConstraints.size()-1; i++) {
@@ -201,8 +204,9 @@ public class LayoutController {
 			slider10.setManaged(false);
 		}
 		else if(selectedToggle == radioMenuItemSlider10) {
+			bandCount = 10;
 			// Frequenzen ändern
-			changeFrequencies(10);
+			changeFrequencies(bandCount);
 
 			// Spaltenbreite anpassen
 			for(int i=1; i<columnConstraints.size()-1; i++) {
@@ -243,13 +247,17 @@ public class LayoutController {
 		}
 	}
 
+	/**
+	 * Ändert die unter den Slidern angezeigten Frequenzen.
+	 * @param bandCount Anzahl der Bänder
+	 */
 	private void changeFrequencies(int bandCount) {
 		// falls Datei vorhanden
 		if(file!=null) {
 			// falls sinnvolle Anzahl Bänder übergeben.
-			if(bandCount != -1) {
+			//if(bandCount != -1) {
 				soundProcessor.setNumberOfEqBands(bandCount);
-			}
+			//}
 
 			Label[] labels = {labelSlider1, labelSlider2, labelSlider3, labelSlider4, labelSlider5, labelSlider6, labelSlider7, labelSlider8, labelSlider9, labelSlider10};
 			int[] frequencies = soundProcessor.getFrequencies();

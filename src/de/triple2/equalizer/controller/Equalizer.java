@@ -69,8 +69,9 @@ public class Equalizer {
 	*
 	* @param argSampleRate Samplerate
 	* @param argNumberOfBands Anzahl der Bänder
+	* @return Integer Array mit den Frequenzen der Bänder
 	*/
-	public void initializeBands(int argSampleRate, int argNumberOfBands) {
+	public int[] initializeBands(int argSampleRate, int argNumberOfBands) {
 		// Das hier ist so ziemlich eine 1-zu-1-Anwendung des Matlab-Teils.
 		// Vielleicht ist es besser, das Matlab-Beispiel zu lesen, um das hier zu verstehen,
 		// da fast alle Erklärungen hier mit copy-paste zutreffen.
@@ -121,7 +122,7 @@ public class Equalizer {
 		int tenPower = 0;
 		double tenFactor;
 		for(int i=0; i<numberOfBands; i++){
-			//die anzuzeigende Frequenz ist genau inder Mitte zwischen 2 Bändern
+			//die anzuzeigende Frequenz ist genau in der Mitte zwischen 2 Bändern
 			frequenciesToShow[i] = (int) (0.5*(bandFrequencies[i] + bandFrequencies[i+1]));
 
 			// damit bestimme ich, wie lang die Zahl ist, z.B. hat 16000 fünf Stellen, also
@@ -136,6 +137,7 @@ public class Equalizer {
 			//ist 16000.
 			frequenciesToShow[i] = (int) ((int) (frequenciesToShow[i] / (tenFactor) ) * tenFactor);
 		}
+		return frequenciesToShow;
 	}
 
 	/**
@@ -165,14 +167,6 @@ public class Equalizer {
 			bandIndices[numberOfBands] = (bufferSize / 2);
 
 		}
-	}
-
-	/**
-	* Gibt das Array mit den im EQ anzuzeigenden Frequenzen zurück.
-	* @return Array mit den anzuzeigenden Frequenzen.
-	*/
-	public int[] getFrequenciesToShow(){
-		return frequenciesToShow;
 	}
 
 	/**
