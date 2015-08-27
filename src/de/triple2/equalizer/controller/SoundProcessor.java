@@ -63,6 +63,7 @@ public class SoundProcessor {
 
 	/**
 	 * Wird aufgerufen, sobald eine Datei eingelesen werden soll.
+	 * @param audioFile die eingelesene Datei.
 	 */
 	public void initializeEqualizer(File audioFile) {
 		try {
@@ -151,7 +152,7 @@ public class SoundProcessor {
 
 	/**
 	 * Übergibt eine Audio-Datei dem Equalizer und spielt sie ab.
-	 * @param soundFile Die Audiodatei.
+	 * @param audioFile Die Audiodatei.
 	 */
 	public void playSound(File audioFile) {
 
@@ -329,6 +330,7 @@ public class SoundProcessor {
 
 	/**
 	* Getter für die Anzahl der Frames im Buffer.
+	* @return Größe des Buffers in Frames.
 	*/
 	public int getFramesInBuffer() {
 		return framesInBuffer;
@@ -339,7 +341,7 @@ public class SoundProcessor {
      * Achtung!
      * Danach muss der Equalizer neu eingestellt werden, also z.B. playSound() aufgerufen werden.
 	 *
-     * @param framesInBuffer
+     * @param framesInBuffer Größe des Buffers in Frames.
      */
 	public void setFramesInBuffer(int framesInBuffer) {
 		this.framesInBuffer = framesInBuffer;
@@ -347,6 +349,7 @@ public class SoundProcessor {
 
 	/**
 	* Getter für die Anzahl der genutzten EQ-Bänder.
+	* @return Anzahl der Bänder.
 	*/
 	public int getNumberOfEqBands() {
 		return numberOfEqBands;
@@ -357,7 +360,7 @@ public class SoundProcessor {
      * Achtung!
      * Danach muss der Equalizer neu eingestellt werden, also z.B. playSound() aufgerufen werden.
 	 *
-     * @param framesInBuffer
+     * @param numberOfEqBands Anzahl der Bänder.
      */
 	public void setNumberOfEqBands(int numberOfEqBands) {
 		int sr = (int) wavFile.getSampleRate();
